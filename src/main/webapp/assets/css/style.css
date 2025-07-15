@@ -1,0 +1,98 @@
+/* Remove margens e paddings */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #ffc107;
+    color: #f8f9fa;
+}
+
+/* Links da navbar */
+.navbar a {
+    color: #f8f9fa;
+}
+
+.navbar a:hover {
+    color: #212529;
+}
+
+/* Botões */
+.btn-bege {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+}
+
+.btn-bege:hover {
+    background-color: #e0a800;
+    color: white;
+}
+
+.btn-outline-bege {
+    background-color: transparent;
+    color: #ffc107;
+    border: 2px solid #ffc107;
+}
+
+.btn-outline-bege:hover {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.imgPerfil{
+	border-radius: 50%;
+	width: 48px;
+	height: 48px;
+	object-fit: cover;
+	display: block;
+}
+
+
+
+
+
+/* Cards */
+.card-bege {
+    background-color: #f8f9fa;
+    color: #212529;
+    border: 1px solid #ffc107;
+}
+
+/* Carrossel */
+.carousel-item img {
+    width: 100vw;
+    height: 500px;
+    object-fit: cover;
+}
+
+/* Setas do carrossel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ffc107;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+/* Botão Saiba Mais */
+.btn-saiba-mais {
+    margin-top: 20px;
+    display: block;
+    background-color: #ffc107;
+    color: #212529;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-saiba-mais:hover {
+    background-color: #e0a800;
+    color: white;
+}

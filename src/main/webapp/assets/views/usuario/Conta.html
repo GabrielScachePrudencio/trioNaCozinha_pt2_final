@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Conta</title>
+    <link rel="icon" href="${ctx}/imagens/logo/iconsite.png" type="image/png">
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    .conta {
+        max-width: 900px;
+        background: #fff;
+        margin: 30px auto;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .conta img {
+        display: block;
+        margin: 0 auto 25px auto;
+        width: 400px;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 4px white,
+            0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: box-shadow 0.3s ease;
+    }
+    .conta img:hover {
+        box-shadow:
+            0 0 0 4px #c13584,
+            0 4px 20px rgba(193, 53, 132, 0.6);
+    }
+    @media (max-width: 480px) {
+        .conta img {
+            width: 100px;
+            height: 100px;
+        }
+    }
+    h1 {
+        text-align: center;
+        color: #6a4c93;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    h2 {
+        margin-top: 40px;
+        color: #444;
+        border-bottom: 2px solid #6a4c93;
+        padding-bottom: 5px;
+    }
+    .receita-card {
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .receita-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .receita-card img {
+        float: left;
+        margin-right: 20px;
+        border-radius: 6px;
+        width: 180px;
+        height: 120px;
+        object-fit: cover;
+    }
+    .receita-card p {
+        margin: 5px 0;
+        font-size: 0.95rem;
+        color: #555;
+    }
+    .receita-card ul {
+        list-style: disc inside;
+        margin: 5px 0 10px 0;
+        padding-left: 0;
+    }
+    .receita-card ul li {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .receita-card a {
+        display: inline-block;
+        margin-top: 8px;
+        margin-right: 10px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        color: #6a4c93;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+    .receita-card a:hover {
+        color: #9b76c1;
+        text-decoration: underline;
+    }
+
+    .links-conta {
+        margin-top: 40px;
+        text-align: center;
+    }
+    .links-conta a {
+        margin: 10px;
+        color: #6a4c93;
+        text-decoration: none;
+        font-weight: 600;
+        border: 2px solid #6a4c93;
+        padding: 10px 20px;
+        border-radius: 30px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        display: inline-block;
+    }
+    .links-conta a:hover {
+        background-color: #6a4c93;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .receita-card img {
+            float: none;
+            display: block;
+            margin: 0 auto 15px auto;
+            width: 100%;
+            height: auto;
+        }
+
+        .links-conta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .links-conta a {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 5px auto;
+            text-align: center;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+<div class="conta" id="conta">
+       
+</div>
+
+
+    <script>
+    const contextPath = "/TRIO_NACOZINHA"; // o seu caminho base
+
+    function irParaReceitaMaisDetalhada2(id) {
+    	window.location.href = `/TRIO_NACOZINHA/assets/views/receita/ReceitaEspecifica.html?id=${id}`;
+    }
+
+
+    async function verificarLogin() {
+        try {
+            const resp = await fetch(`${contextPath}/UsuarioServletLogar`, {
+                credentials: "include"
+            });
+
+            if (!resp.ok) throw new Error("Usuário não logado");
+
+            const usuario = await resp.json();
+            console.log("Usuário logado:", usuario.nome);
+            usuarioLogado = usuario;
+            carregarDados(usuarioLogado); 
+        } catch (err) {
+        	alert(err.erro)
+            console.warn("Usuário não autenticado!");
+            usuarioLogado = null;
+        }
+    }
+
+
+    function carregarDados(usuario) {
+        const conta = document.getElementById("conta");
+        conta.innerHTML = "";
+
+        // Foto de perfil
+        const img = document.createElement("img");
+        img.src = `${contextPath}/imagens/${usuario.img}`;
+        img.alt = `Foto de ${usuario.nome}`;
+        conta.appendChild(img);
+
+        // Nome
+        const h1 = document.createElement("h1");
+        h1.textContent = `Olá, ${usuario.nome}!`;
+        conta.appendChild(h1);
+
+        // Suas Receitas - título
+        const h2 = document.createElement("h2");
+        h2.textContent = "Suas Receitas";
+        conta.appendChild(h2);
+
+        // Loop de receitas
+        usuario.minhasReceitas.forEach(receita => {
+            const card = document.createElement("div");
+            card.className = "receita-card";
+            card.setAttribute("role", "button");
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("onclick", `irParaReceitaMaisDetalhada2(${receita.id})`);
+            card.setAttribute("onkeypress", `if(event.key === 'Enter') irParaReceitaMaisDetalhada2(${receita.id})`);
+
+            card.innerHTML = `
+                <img alt="Imagem da Receita" src="${contextPath}/assets/imagens/${receita.img}" || "${contextPath}/imagens/${receita.img}">
+                <p><strong>ID:</strong> ${receita.id}</p>
+                <p><strong>Nome:</strong> ${receita.nome}</p>
+                <p><strong>Autor:</strong> ${receita.autor}</p>
+                <p><strong>Tempo de Preparo:</strong> ${receita.tempoDePreparoMinutos} minutos</p>
+                <p><strong>Porções:</strong> ${receita.qtddPorcoes}</p>
+                <p><strong>Ingredientes:</strong></p>
+                <ul>${receita.ingredientes.map(ing => `<li>${ing}</li>`).join("")}</ul>
+                <p><strong>Modo de Preparo:</strong> ${receita.modoPreparo}</p>
+                <p><strong>Categorias:</strong></p>
+                <ul>${receita.categorias.map(cat => `<li>${cat}</li>`).join("")}</ul>
+            `;
+			
+            
+            /*
+            card.innerHTML = `
+                <img alt="Imagem da Receita" src="${contextPath}/assets/imagens/${receita.img}" || "${contextPath}/imagens/${receita.img}">
+                <p><strong>ID:</strong> ${receita.id}</p>
+                <p><strong>Nome:</strong> ${receita.nome}</p>
+                <p><strong>Autor:</strong> ${receita.autor}</p>
+                <p><strong>Tempo de Preparo:</strong> ${receita.tempoDePreparoMinutos} minutos</p>
+                <p><strong>Porções:</strong> ${receita.qtddPorcoes}</p>
+                <p><strong>Ingredientes:</strong></p>
+                <ul>${receita.ingredientes.map(ing => `<li>${ing}</li>`).join("")}</ul>
+                <p><strong>Modo de Preparo:</strong> ${receita.modoPreparo}</p>
+                <p><strong>Categorias:</strong></p>
+                <ul>${receita.categorias.map(cat => `<li>${cat}</li>`).join("")}</ul>
+                
+                exemplo de como funcionava os botoes de editar e deletar das receitas
+
+                <a href="${contextPath}/ReceitaServletEditar?id=${receita.id}">Editar Receita</a>
+                <a href="${contextPath}/ReceitaServletDeletar?id=${receita.id}">Deletar Receita</a>
+            `;
+
+            */
+            conta.appendChild(card);
+        });
+
+        // Links finais
+        const linksDiv = document.createElement("div");
+        linksDiv.className = "links-conta";
+        linksDiv.innerHTML = `
+            <a href="${contextPath}/UsuarioServletDeconectar?id=${usuario.id}">Desconectar</a>
+            <a href="../../../index.html">Voltar à Página Principal</a>
+        `;
+        
+        /*
+        
+        
+        linksDiv.innerHTML = `
+            <a href="${contextPath}/UsuarioServletEditar?id=${usuario.id}">Editar Usuário</a>
+            <a href="${contextPath}/UsuarioServletDeconectar?id=${usuario.id}">Desconectar</a>
+            <a href="${contextPath}/UsuarioServletDeletar?id=${usuario.id}">Deletar Conta</a>
+            <a href="../../../index.html">Voltar à Página Principal</a>
+        `;
+        */
+        conta.appendChild(linksDiv);
+    }
+
+
+    window.onload = verificarLogin;
+    
+    </script>
+</body>
+</html>

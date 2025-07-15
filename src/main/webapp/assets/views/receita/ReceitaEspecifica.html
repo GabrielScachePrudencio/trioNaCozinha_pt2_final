@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Detalhes da Receita</title>
+<link rel="icon" href="/TRIO_NACOZINHA/imagens/logo/iconsite.png" type="image/png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .navbar {
+    background-color: #ffc107;
+    color: #f8f9fa;
+  }
+  .navbar a {
+    color: #f8f9fa;
+  }
+  .navbar a:hover {
+    color: #212529;
+  }
+  .btn-bege {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+  }
+  .btn-bege:hover {
+    background-color: #e0a800;
+    color: white;
+  }
+  .btn-outline-bege {
+    background-color: transparent;
+    color: #ffc107;
+    border: 2px solid #ffc107;
+  }
+  .btn-outline-bege:hover {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  .hover-effect:hover {
+    background-color: black;
+    color: white;
+    transition: 0.3s;
+  }
+  a {
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.3s;
+  }
+  a:hover {
+    border-bottom: 1px solid black;
+  }
+  .form-check-label:hover {
+    background-color: #fff5e4;
+    padding: 0px 20px;
+    transition: 0.5s;
+  }
+  @media (min-width: 992px) {
+    .imagem-receita {
+      margin-left: 4rem;
+    }
+  }
+  .imgPerfil {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    display: block;
+  }
+  #avaliacaoEstrelasContainer span {
+    font-size: 28px;
+    color: gold;
+    margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-marrom text-bege px-4 py-3">
+  <div class="container-fluid justify-content-between" id="menuJS"></div>
+</nav>
+
+<div class="container mb-5">
+  <div class="d-flex flex-column flex-lg-row align-items-center">
+    <div class="me-lg-5 mb-4 mb-lg-0 pe-lg-5">
+      <h1 id="nomeReceita" class="display-4"><strong></strong></h1>
+      <p><strong>Autor:</strong> <span id="autorReceita"></span></p>
+      <div id="avaliacaoEstrelasContainer" class="mb-3"></div>
+      <div class="d-flex flex-wrap gap-2" id="categoriasReceita"></div>
+    </div>
+    <img id="imgReceita" src="" alt="Imagem da Receita" class="img-fluid rounded imagem-receita ms-lg-auto" style="max-width: 600px;">
+  </div>
+</div>
+
+<div style="background-color: #efd19f; width: 100%;">
+  <div class="container py-5">
+    <p><strong>Tempo de Preparo:</strong> <span id="tempoReceita"></span> minutos</p>
+    <p><strong>Quantidade de Porções:</strong> <span id="porcoesReceita"></span></p>
+    <div>
+      <h5>Ingredientes:</h5>
+      <ul id="ingredientesReceita" class="list-unstyled"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <h5>Modo de Preparo:</h5>
+  <p id="modoPreparoReceita"></p>
+</div>
+
+<div id="avaliacaoContainer" class="container mb-5"></div>
+
+
+<div class="container mb-5">
+  <h5>Enviar Comentários:</h5>
+  <form id="formEnviarReceita">
+    <div class="mb-3">
+      <label for="novaReceita" class="form-label">Descreva sua Comentários:</label>
+      <textarea class="form-control" id="novaReceita" rows="3" placeholder="Digite aqui sua receita completa..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-bege">Enviar Comentários</button>
+  </form>
+</div>
+
+
+<div class="container py-5">
+  <h5>Comentários:</h5>
+  <div id="comentariosReceita"></div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const contextPath = "/TRIO_NACOZINHA";
+  let usuarioLogado = null;
+  let receitaAtual = null;
+
+  async function verificarLogin() {
+    try {
+      const resp = await fetch(`${contextPath}/UsuarioServletLogar`, { credentials: "include" });
+      if (!resp.ok) throw new Error("Não logado");
+      usuarioLogado = await resp.json();
+    } catch {
+      usuarioLogado = null;
+    }
+  }
+
+  async function carregarMenu() {
+    const nav = document.createElement('nav');
+    nav.className = 'navbar navbar-expand-lg bg-marrom text-bege px-4 py-3';
+
+    const container = document.createElement('div');
+    container.className = 'container-fluid justify-content-between d-flex align-items-center';
+
+    const brandLink = document.createElement('a');
+    brandLink.className = 'navbar-brand';
+    brandLink.href = `${contextPath}/index.html`;
+    const logoImg = document.createElement('img');
+    logoImg.src = `${contextPath}/assets/imagens/logo/logo_pageindex.png`;
+
+    logoImg.alt = 'Trio Na Cozinha';
+    logoImg.height = 40;
+    brandLink.appendChild(logoImg);
+    container.appendChild(brandLink);
+
+    const containerDiv = document.createElement('div');
+    containerDiv.className = 'd-flex align-items-center gap-3';
+
+    const sobreNosLink = document.createElement('a');
+    sobreNosLink.href = `${contextPath}/assets/views/extras/SobreNos.html`;
+    sobreNosLink.className = 'btn btn-outline-bege';
+    sobreNosLink.textContent = 'Sobre nós';
+    containerDiv.appendChild(sobreNosLink);
+
+    const form = document.createElement('form');
+    form.className = 'd-flex';
+    form.setAttribute('role', 'search');
+    form.method = 'GET';
+
+    const inputBusca = document.createElement('input');
+    inputBusca.className = 'form-control me-2';
+    inputBusca.type = 'search';
+    inputBusca.name = 'busca';
+    inputBusca.placeholder = 'Pesquisar';
+    form.appendChild(inputBusca);
+
+    const btnBusca = document.createElement('button');
+    btnBusca.className = 'btn btn-bege';
+    btnBusca.type = 'submit';
+    btnBusca.textContent = 'Pesquisar';
+    form.appendChild(btnBusca);
+
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const nomeBuscado = inputBusca.value.trim();
+      if (nomeBuscado) {
+        window.location.href = `${contextPath}/assets/views/receita/ReceitaEspecifica.html?nome=${encodeURIComponent(nomeBuscado)}`;
+      }
+    };
+    containerDiv.appendChild(form);
+
+    if (usuarioLogado && usuarioLogado.tipo === "NORMAL") {
+      const addReceitaLink = document.createElement('a');
+      addReceitaLink.href = `${contextPath}/assets/views/receita/AddReceita.html`;
+      addReceitaLink.className = 'btn btn-bege';
+      addReceitaLink.textContent = 'Adicionar Receita';
+      containerDiv.appendChild(addReceitaLink);
+    }
+
+    if (usuarioLogado) {
+      const contaLink = document.createElement('a');
+      contaLink.href = `${contextPath}/assets/views/usuario/Conta.html`;
+      contaLink.className = 'btn btn-outline-bege d-flex align-items-center';
+      contaLink.style.gap = '10px';
+
+      const imgPerfil = document.createElement('img');
+      imgPerfil.src = `${contextPath}/imagens/${usuarioLogado.img}`;
+      imgPerfil.alt = 'Foto do Usuário';
+      imgPerfil.className = 'imgPerfil';
+      imgPerfil.style.width = '32px';
+      imgPerfil.style.height = '32px';
+      imgPerfil.style.borderRadius = '50%';
+
+      const nomeSpan = document.createElement('span');
+      nomeSpan.className = 'text-bege';
+      nomeSpan.textContent = usuarioLogado.nome || 'Usuário';
+
+      contaLink.appendChild(imgPerfil);
+      contaLink.appendChild(nomeSpan);
+      containerDiv.appendChild(contaLink);
+    } else {
+      const cadastrarLink = document.createElement('a');
+      cadastrarLink.href = `${contextPath}/assets/views/usuario/AddUsuario.html`;
+      cadastrarLink.className = 'btn btn-outline-bege';
+      cadastrarLink.textContent = 'Cadastrar-se';
+      containerDiv.appendChild(cadastrarLink);
+
+      const logarLink = document.createElement('a');
+      logarLink.href = `${contextPath}/assets/views/usuario/LogarUsuario.html`;
+      logarLink.className = 'btn btn-outline-bege';
+      logarLink.textContent = 'Logar';
+      containerDiv.appendChild(logarLink);
+    }
+
+    container.appendChild(containerDiv);
+    const menuAntigo = document.querySelector('nav.navbar');
+    if (menuAntigo) {
+      menuAntigo.replaceWith(nav);
+    } else {
+      const menuContainer = document.querySelector('#menuJS') || document.body;
+      menuContainer.appendChild(nav);
+    }
+
+    nav.appendChild(container);
+  }
+
+  function getIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+  }
+
+  function getNomeFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('nome');
+  }
+
+  async function carregarReceita() {
+    const id = getIdFromUrl();
+    const nome = getNomeFromUrl();
+    try {
+      let url = '';
+      if (id) {
+        url = `${contextPath}/ReceitaServletDetalhada?id=${id}`;
+      } else if (nome) {
+        url = `${contextPath}/ReceitaServletDetalhada?nome=${encodeURIComponent(nome)}`;
+      } else {
+        alert('ID ou nome da receita não informado na URL');
+        return;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Erro na requisição');
+      const receita = await response.json();
+      receitaAtual = receita;
+
+      document.getElementById('nomeReceita').textContent = receita.nome;
+      document.getElementById('autorReceita').textContent = receita.autor;
+
+      const categoriasDiv = document.getElementById('categoriasReceita');
+      categoriasDiv.innerHTML = '';
+      receita.categorias.forEach(cat => {
+        const span = document.createElement('span');
+        span.textContent = cat;
+        span.classList.add('border', 'px-2', 'py-1', 'small', 'rounded', 'categoriaIndividual', 'hover-effect', 'me-2');
+        categoriasDiv.appendChild(span);
+      });
+
+      const img = document.getElementById('imgReceita');
+      img.src = `${contextPath}/imagens/${receita.img}`;
+      img.alt = `Imagem da receita ${receita.nome}`;
+
+      document.getElementById('tempoReceita').textContent = receita.tempoDePreparoMinutos;
+      document.getElementById('porcoesReceita').textContent = receita.qtddPorcoes;
+
+      const ingredientesUL = document.getElementById('ingredientesReceita');
+      ingredientesUL.innerHTML = '';
+      receita.ingredientes.forEach((ing, i) => {
+        const li = document.createElement('li');
+        li.classList.add('form-check', 'd-flex', 'align-items-center', 'ms-3', 'mb-1');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.classList.add('form-check-input', 'me-2');
+        checkbox.id = `ingrediente${i}`;
+
+        const label = document.createElement('label');
+        label.classList.add('form-check-label', 'w-100', 'py-1', 'px-2', 'rounded');
+        label.htmlFor = `ingrediente${i}`;
+        label.textContent = ing;
+
+        li.appendChild(checkbox);
+        li.appendChild(label);
+        ingredientesUL.appendChild(li);
+      });
+
+      document.getElementById('modoPreparoReceita').textContent = receita.modoPreparo;
+
+      const comentariosDiv = document.getElementById("comentariosReceita");
+      comentariosDiv.innerHTML = '';
+
+      if (receita.comentarios && receita.comentarios.length > 0) {
+        receita.comentarios.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'mb-3 p-2 border rounded';
+          div.innerHTML = `<strong>${c.usuario.nome}:</strong> ${c.texto}`;
+          comentariosDiv.appendChild(div);
+        });
+      } else {
+        comentariosDiv.innerHTML = '<p>Nenhum comentário ainda.</p>';
+      }
+
+      
+      
+      const mediaNota = calcularMediaAvaliacoes(receita.avaliacoes);
+      mostrarEstrelasNota(mediaNota);
+
+      exibirFormularioAvaliacao(receita.id);
+    } catch (error) {
+      alert('Erro ao carregar receita: ' + error.message);
+    }
+  }
+
+  function calcularMediaAvaliacoes(avaliacoes) {
+    if (!avaliacoes || avaliacoes.length === 0) return 0;
+    const soma = avaliacoes.reduce((acc, obj) => acc + obj.nota, 0);
+    return Math.round(soma / avaliacoes.length);
+  }
+
+  function mostrarEstrelasNota(nota) {
+    const container = document.getElementById('avaliacaoEstrelasContainer');
+    container.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const estrela = document.createElement('span');
+      estrela.textContent = i <= nota ? '★' : '☆';
+      container.appendChild(estrela);
+    }
+  }
+
+  function exibirFormularioAvaliacao(idReceita) {
+	  const container = document.getElementById("avaliacaoContainer");
+
+	  // Só mostra o formulário se o usuário for do tipo AVALIADOR
+	  if (usuarioLogado && usuarioLogado.tipo === "AVALIADOR") {
+	    container.innerHTML = `
+	      <h3>Avaliar Receita</h3>
+	      <form id="formAvaliacao" method="post">
+	        <label for="nota">Nota (1 a 5):</label>
+	        <select name="nota" id="nota" required class="form-select w-25">
+	          <option value="">--Selecione--</option>
+	          <option value="1">1 - Péssima</option>
+	          <option value="2">2 - Ruim</option>
+	          <option value="3">3 - Regular</option>
+	          <option value="4">4 - Boa</option>
+	          <option value="5">5 - Excelente</option>
+	        </select>
+	        <input type="hidden" name="idReceita" id="idReceita" value="${idReceita}" />
+	        <button type="submit" class="btn btn-bege mt-2">Enviar Avaliação</button>
+	      </form>
+	    `;
+
+	    document.getElementById('formAvaliacao').addEventListener('submit', async function(event) {
+	      event.preventDefault();
+	      const nota = document.getElementById('nota').value;
+	      const formData = new URLSearchParams();
+	      formData.append('idReceita', idReceita);
+	      formData.append('nota', nota);
+
+	      const response = await fetch(`${contextPath}/AvaliarReceitaServlet`, {
+	        method: 'POST',
+	        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	        body: formData.toString(),
+	        credentials: 'include'
+	      });
+
+	      if (!response.ok) {
+	        alert("Erro ao avaliar receita");
+	      } else {
+	        alert("Obrigado por avaliar!");
+	        mostrarEstrelasNota(parseInt(nota));
+	        this.querySelector('button[type="submit"]').disabled = true;
+	      }
+	    });
+	  } else {
+	    container.innerHTML = '';
+	  }
+	}
+
+	async function init() {
+	  await verificarLogin();
+
+
+	  await carregarMenu();
+	  await carregarReceita(); 
+	}
+
+	window.onload = init;
+
+	
+	document.getElementById('formEnviarReceita').addEventListener('submit', async function(event) {
+		  event.preventDefault();
+		  
+		  const textoReceita = document.getElementById('novaReceita').value.trim();
+
+		  if (!textoReceita) {
+		    alert("Por favor, digite a receita antes de enviar.");
+		    return;
+		  }
+
+		  try {
+		    const formData = new URLSearchParams();
+		    formData.append("idReceita", receitaAtual.id); // usa o ID da receita atual
+		    formData.append("texto", textoReceita);
+
+		    const response = await fetch(`${contextPath}/ComentarReceitaServlet`, {
+		      method: 'POST',
+		      headers: {
+		        'Content-Type': 'application/x-www-form-urlencoded'
+		      },
+		      body: formData.toString(),
+		      credentials: 'include'
+		    });
+
+		    if (response.ok) {
+		      alert("Receita enviada com sucesso!");
+		      document.getElementById('novaReceita').value = '';
+		      location.reload(); // recarrega pra mostrar a nova receita adicionada
+		    } else {
+		      throw new Error("Erro ao enviar receita");
+		    }
+		  } catch (err) {
+		    alert(err.message);
+		  }
+		});
+
+</script>
+
+</body>
+</html>

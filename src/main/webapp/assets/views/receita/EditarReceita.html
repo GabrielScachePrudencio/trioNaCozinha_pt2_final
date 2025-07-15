@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editar Receita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Editar Receita</h1>
+    <form id="formEditarReceita">
+      <input type="hidden" id="id" name="id" />
+
+      <div class="mb-3">
+        <label class="form-label">Nome:</label>
+        <input type="text" class="form-control" id="nome" name="nome" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Autor:</label>
+        <input type="text" class="form-control" id="autor" name="autor" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Tempo de Preparo (min):</label>
+        <input type="number" class="form-control" id="tempoDePreparoMinutos" name="tempoDePreparoMinutos" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Ingredientes (separados por vírgula):</label>
+        <input type="text" class="form-control" id="ingredientes" name="ingredientes" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Modo de Preparo:</label>
+        <textarea class="form-control" id="modoPreparo" name="modoPreparo" rows="4" required></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Categorias (separadas por vírgula):</label>
+        <input type="text" class="form-control" id="categorias" name="categorias" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Porções:</label>
+        <input type="number" class="form-control" id="qtddPorcoes" name="qtddPorcoes" />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="ListarReceitas.html" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+  </div>
+
+  <script>
+    const contextPath = "/TRIO_NACOZINHA";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    async function carregarReceita() {
+      const resp = await fetch(`${contextPath}/ReceitaServletDetalhada?id=${id}`);
+      if (!resp.ok) {
+        alert("Erro ao carregar receita");
+        return;
+      }
+      const receita = await resp.json();
+
+      document.getElementById('id').value = receita.id;
+      document.getElementById('nome').value = receita.nome;
+      document.getElementById('autor').value = receita.autor;
+      document.getElementById('tempoDePreparoMinutos').value = receita.tempoDePreparoMinutos;
+      document.getElementById('ingredientes').value = receita.ingredientes.join(', ');
+      document.getElementById('modoPreparo').value = receita.modoPreparo;
+      document.getElementById('categorias').value = receita.categorias.join(', ');
+      document.getElementById('qtddPorcoes').value = receita.qtddPorcoes;
+    }
+
+    document.getElementById('formEditarReceita').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const receitaAtualizada = {
+        id: id,
+        nome: document.getElementById('nome').value,
+        autor: document.getElementById('autor').value,
+        tempoDePreparoMinutos: parseInt(document.getElementById('tempoDePreparoMinutos').value),
+        ingredientes: document.getElementById('ingredientes').value.split(',').map(i => i.trim()),
+        modoPreparo: document.getElementById('modoPreparo').value,
+        categorias: document.getElementById('categorias').value.split(',').map(c => c.trim()),
+        qtddPorcoes: parseInt(document.getElementById('qtddPorcoes').value)
+      };
+
+      const resp = await fetch(`${contextPath}/admin/receita`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(receitaAtualizada),
+        credentials: 'include'
+      });
+
+      if (resp.ok) {
+        alert("Receita atualizada com sucesso!");
+        window.location.href = "ListarReceitas.html";
+      } else {
+        alert("Erro ao atualizar receita");
+      }
+    });
+
+    carregarReceita();
+  </script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Receita</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="${ctx}/imagens/logo/iconsite.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: black;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-container {
+            background-color: #ffc107;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2);
+            color: #212529;
+            max-width: 700px;
+            margin: 50px auto;
+        }
+
+        .form-container h2 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #212529;
+        }
+
+        .form-container label {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #212529;
+        }
+
+        .form-control {
+            background-color: transparent;
+            border: 2px solid #212529;
+            border-radius: 5px;
+            color: #212529;
+        }
+
+        .form-control:focus {
+            border-color: #212529;
+            box-shadow: none;
+            background-color: #fffde7;
+        }
+
+        .form-check-label {
+            color: #212529;
+        }
+
+        .form-container .btn {
+            margin-top: 30px;
+            background-color: #212529;
+            color: #ffc107;
+            font-weight: bold;
+            border-radius: 25px;
+            padding: 10px 25px;
+            transition: 0.3s;
+        }
+
+        .form-container .btn:hover {
+            background-color: #ffc107;
+            color: #212529;
+            border: 2px solid #212529;
+        }
+
+        .ingrediente-extra {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="text-center mt-5">
+    <a href="../../../index.html" class="btn btn-warning">
+        <i class="fa-solid fa-arrow-left">Voltar para a página principal</i> 
+    </a>
+</div>
+
+<div class="form-container">
+    <h2>Adicionar nova Receita</h2>
+	<form method="POST" enctype="multipart/form-data" id="formulario" onsubmit="addReceita(event)">
+
+        <label for="nome">Nome:</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+
+        <label for="autor">Autor:</label>
+		<input type="text" class="form-control" id="autor" name="autor" readonly>
+
+        <label for="tempoDePreparoMinutos">Tempo de preparo (min):</label>
+        <input type="number" class="form-control" id="tempoDePreparoMinutos" name="tempoDePreparoMinutos" required>
+
+        <label for="qtddPorcoes">Quantidade de Porções:</label>
+        <input type="number" class="form-control" id="qtddPorcoes" name="qtddPorcoes" required>
+
+        <div class="mt-4">
+           <label class="form-label">Ingredientes (selecione):</label>
+		    <div class="row row-cols-2 row-cols-md-3 g-1">
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Açúcar" id="ingAcucar">
+		            <label class="form-check-label" for="ingAcucar">Açúcar</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Farinha" id="ingFarinha">
+		            <label class="form-check-label" for="ingFarinha">Farinha</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Leite" id="ingLeite">
+		            <label class="form-check-label" for="ingLeite">Leite</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Ovo" id="ingOvo">
+		            <label class="form-check-label" for="ingOvo">Ovo</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Chocolate" id="ingChocolate">
+		            <label class="form-check-label" for="ingChocolate">Chocolate</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Fermento" id="ingFermento">
+		            <label class="form-check-label" for="ingFermento">Fermento</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Essência de baunilha" id="ingBaunilha">
+		            <label class="form-check-label" for="ingBaunilha">Essência de baunilha</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Água" id="ingAgua">
+		            <label class="form-check-label" for="ingAgua">Água</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Guaraná" id="ingGuarana">
+		            <label class="form-check-label" for="ingGuarana">Guaraná</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Coco" id="ingCoco">
+		            <label class="form-check-label" for="ingCoco">Coco</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Avelã" id="ingAvela">
+		            <label class="form-check-label" for="ingAvela">Avelã</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="Manteiga" id="ingManteiga">
+		            <label class="form-check-label" for="ingManteiga">Manteiga</label>
+		        </div>
+		        <div class="form-check col">
+		            <input class="form-check-input" type="checkbox" name="ingredientes" value="3 ovos" id="ing3ovos">
+		            <label class="form-check-label" for="ing3ovos">3 ovos</label>
+		        </div>
+		
+                <div class="form-check col">
+                    <input class="form-check-input" type="checkbox" name="ingredientes" value="<%= ing %>" id="ing<%= ing.hashCode() %>">
+                    <label class="form-check-label" for="ing<%= ing.hashCode() %>"></label>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <label class="form-label">Ingredientes adicionais:</label>
+            <div id="ingredientesExtras"></div>
+            <button type="button" class="btn btn-dark mt-2" onclick="adicionarIngrediente()">+ Adicionar ingrediente</button>
+        </div>
+
+        <div class="mt-4">
+            <label class="form-label">Categorias:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="categorias" value="Bolos" id="catBolos">
+                <label class="form-check-label" for="catBolos">Bolos</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="categorias" value="Biscoitos" id="catBiscoitos">
+                <label class="form-check-label" for="catBiscoitos">Biscoitos</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="categorias" value="Naturais" id="catNaturais">
+                <label class="form-check-label" for="catNaturais">Naturais</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="categorias" value="Doces" id="catDoces">
+                <label class="form-check-label" for="catDoces">Doces</label>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <label for="img" class="form-label">Imagem:</label>
+            <input class="form-control" type="file" name="img" id="img" accept="image/*" required>
+        </div>
+
+        <label for="modoPreparo" class="mt-4">Modo de preparo:</label>
+        <textarea class="form-control" id="modoPreparo" name="modoPreparo" rows="3" required></textarea>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn">Adicionar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+	
+	const contextPath = window.location.pathname.split('/')[1];
+	
+	async function verificarLogin() {
+	    try {
+	        const resp = await fetch(`/${contextPath}/UsuarioServletLogar`, {
+	            credentials: "include"
+	        });
+	
+	        if (!resp.ok) throw new Error("Usuário não logado");
+	
+	        const usuario = await resp.json();
+	        console.log("Usuário logado:", usuario.nome);
+	        usuarioLogado = usuario;
+	
+	        const autorInput = document.getElementById("autor");
+	        autorInput.value = usuarioLogado.nome;
+	    } catch (err) {
+	        console.warn("Usuário não autenticado!");
+	        usuarioLogado = null;
+	    }
+	}
+
+
+    function adicionarIngrediente() {
+        const container = document.getElementById("ingredientesExtras");
+
+        const div = document.createElement("div");
+        div.classList.add("ingrediente-extra");
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "ingredientes";
+        input.placeholder = "Novo ingrediente";
+        input.classList.add("form-control", "mt-2");
+
+        div.appendChild(input);
+        container.appendChild(div);
+    }
+    
+    
+
+    function addReceita(event) {
+        event.preventDefault();
+        let form = document.getElementById("formulario");
+        let formData = new FormData(form);
+        const contextPath = window.location.pathname.split('/')[1];
+
+        fetch(`/${contextPath}/ReceitaServletAdd`, {
+            method: "POST",
+            body: formData
+        })
+        .then(async (response) => {
+            const contentType = response.headers.get("content-type");
+
+            if (!response.ok) {
+                const errorData = contentType && contentType.includes("application/json")
+                    ? await response.json()
+                    : { erro: "Erro ao adicionar receita. Verifique os dados." };
+                throw new Error(errorData.erro);
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            alert("Receita adicionada com sucesso!");
+            window.location.href = `/${contextPath}/index.html`;
+        })
+        .catch(error => {
+            alert(error.message);
+            console.error("Erro ao adicionar receita:", error);
+        });
+    }
+
+    verificarLogin();
+</script>
+
+
+
+</body>
+</html>

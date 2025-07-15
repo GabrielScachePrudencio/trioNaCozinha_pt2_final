@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Usuário</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="${ctx}/imagens/logo/iconsite.png" type="image/png">
+</head>
+
+    <meta charset="UTF-8">
+    <title>Adicionar Usuário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Favicon -->
+  <link rel="icon" href="../../imagens/logo/iconsite.png" type="image/png">
+    <style>
+        .bg-marrom {
+            background-color: #212529;
+        }
+        .text-bege {
+            color: #ffc107;
+        }
+        .btn-bege {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+        }
+        .btn-bege:hover {
+            background-color: #e0ac06;
+            color: #212529;
+        }
+        .btn-outline-bege {
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .btn-outline-bege:hover {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .form-container {
+            min-height: 100vh;
+        }
+        .form-box {
+            background-color: #212529;
+            padding: 40px;
+            border-radius: 16px;
+            color: #ffc107;
+            width: 100%;
+            max-width: 500px;
+        }
+        .form-logo img {
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg bg-marrom text-bege px-4 py-3">
+    <div class="container-fluid justify-content-between">
+        <a class="navbar-brand" href="../../../index.html">
+            <img src="../../imagens/logo/logo_pageindex.png" alt="Trio Na Cozinha" height="40">
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <form class="d-flex" role="search" action="<%= request.getContextPath() %>/ReceitaServletDetalhada" method="POST">
+                <input class="form-control me-2" type="search" name="busca" placeholder="Pesquisar">
+                <button class="btn btn-bege" type="submit">Pesquisar</button>
+            </form>
+            <a href="../extras/SobreNos.html" class="btn btn-outline-bege">Sobre nós</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ✅ Conteúdo da página de cadastro -->
+<div class="container-fluid form-container d-flex align-items-center justify-content-center">
+    <div class="form-box">
+        <div class="text-center form-logo mb-4">
+            <img src="../../imagens/logo/logo_pageindex.png" alt="Trio Na Cozinha">
+        </div>
+        <h3 class="mb-4 text-center">Adicionar Usuário</h3>
+
+        <form id="formulario" method="POST" enctype="multipart/form-data" onsubmit="addUsuario(event)">
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome de Usuário</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="senha" name="senha" required>
+            </div>
+            <div class="mb-3">
+                <label for="img" class="form-label">Imagem de Perfil</label>
+                <input type="file" class="form-control" id="img" name="img" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-bege w-100">Adicionar Usuário</button>
+        </form>
+        <p id="msgErro"> </p>
+    </div>
+</div>
+
+<script>
+	function addUsuario(event) { // ← Corrigido
+	    event.preventDefault();
+		let msg = document.getElementById("msgErro");
+		msg.textContent = ";"
+	    let form = document.getElementById("formulario");
+	    let formData = new FormData(form);
+	    const contextPath = window.location.pathname.split('/')[1];
+	
+	    fetch(`/${contextPath}/UsuarioServletAdd`, {
+	        method: "POST",
+	        body: formData
+	    })
+	    .then(async (response) => {
+	        const contentType = response.headers.get("content-type");
+	
+	        if (!response.ok) {
+	            const errorData = contentType && contentType.includes("application/json")
+	                ? await response.json()
+	                : { erro: "Erro ao adicionar usuário. Verifique os dados." };
+	            throw new Error(errorData.erro);
+	        }
+	
+	        return response.json();
+	    })
+	    .then(data => {
+	        alert("Usuário adicionado com sucesso!");
+	        window.location.href = `/${contextPath}/index.html`;
+	    })
+	    .catch(error => {
+	        alert(error.message);
+	        msg.textContent = error.message;
+	        console.error("Erro ao adicionar usuário:", error);
+	    });
+	}
+	</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
