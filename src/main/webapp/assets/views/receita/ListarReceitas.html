@@ -2,8 +2,9 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Listar Receitas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Listar Receitas e Usuários</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="icon" href="assets/imagens/logo/iconsite.png" type="image/png" />
 </head>
 <body>
   <div class="container mt-5">
@@ -22,55 +23,62 @@
         <!-- Linhas inseridas via JS -->
       </tbody>
     </table>
-  </div>
+
+    </div>
 
   <script>
-    const contextPath = "/TRIO_NACOZINHA";
+    const contextPath = "/TRIO_NACOZINHA"; // ajuste para seu contexto
 
+    // --------- RECEITAS ---------
     async function carregarReceitas() {
-      const resp = await fetch(`${contextPath}/admin/receita?acao=listar`);
-      if (!resp.ok) {
-        alert("Erro ao carregar receitas");
-        return;
+      try {
+        const resp = await fetch(`${contextPath}/ReceitaServletMostrarTodas`);
+        if (!resp.ok) throw new Error("Erro ao carregar receitas");
+        const receitas = await resp.json();
+
+        const tbody = document.querySelector("#tabelaReceitas tbody");
+        tbody.innerHTML = "";
+
+        receitas.forEach(r => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${r.id}</td>
+            <td>${r.nome}</td>
+            <td>${r.autor}</td>
+            <td>${r.tempoDePreparoMinutos}</td>
+            <td>
+              <a href="${contextPath}/ReceitaServletEditar?id=${r.id}" class="btn btn-warning btn-sm me-2">Editar</a>
+              <button class="btn btn-danger btn-sm" onclick="excluirReceita(${r.id})">Excluir</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert(error.message);
       }
-      const receitas = await resp.json();
-
-      const tbody = document.querySelector("#tabelaReceitas tbody");
-      tbody.innerHTML = "";
-
-      receitas.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.id}</td>
-          <td>${r.nome}</td>
-          <td>${r.autor}</td>
-          <td>${r.tempoDePreparoMinutos}</td>
-          <td>
-            <a href="EditarReceita.html?id=${r.id}" class="btn btn-warning btn-sm me-2">Editar</a>
-            <button class="btn btn-danger btn-sm" onclick="excluirReceita(${r.id})">Excluir</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
     }
 
     async function excluirReceita(id) {
       if (!confirm("Deseja realmente excluir esta receita?")) return;
 
-      const resp = await fetch(`${contextPath}/admin/receita?acao=excluir&id=${id}`, {
-        method: 'GET', // seu servlet trata exclusão via GET com "acao=excluir"
-        credentials: 'include'
-      });
-
-      if (resp.ok) {
+      try {
+        const resp = await fetch(`${contextPath}/ReceitaServletExcluir?id=${id}`, {
+          method: "GET",
+          credentials: "include"
+        });
+        if (!resp.ok) throw new Error("Erro ao excluir receita.");
         alert("Receita excluída!");
         carregarReceitas();
-      } else {
-        alert("Erro ao excluir receita.");
+      } catch (error) {
+        alert(error.message);
       }
     }
 
-    window.onload = carregarReceitas;
+        // Carregar tudo ao carregar a página
+    window.onload = () => {
+      carregarReceitas();
+
+ };
   </script>
 </body>
 </html>

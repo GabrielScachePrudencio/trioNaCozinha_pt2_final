@@ -37,7 +37,27 @@ function criarCardReceita(d) {
     let soma = d.avaliacoes.reduce((acc, a) => acc + a.nota, 0);
     media = Math.round(soma / d.avaliacoes.length);
   }
+  
+  
+  const imgSrc = `http://localhost:8080/TRIO_NACOZINHA/imagens/${d.img || 'sem-imagem.png'}`;
+  //novo
+  card.innerHTML = `
+  <img src="${imgSrc}" class="card-img-top" alt="${d.nome}">
+    <div class="card-body">
+      <p><strong>ID:</strong> ${d.id}</p>
+      <h5 class="card-title">${d.nome}</h5>
+     
+      <p><strong>Autor:</strong> ${d.autor}</p>
+      <p><strong>Tempo:</strong> ${d.tempoDePreparoMinutos} min</p>
+      <p><strong>Porções:</strong> ${d.qtddPorcoes || ''}</p>
+      <p><strong>Modo de Preparo:</strong> ${d.modoPreparo || ""}</p>
+      <p><strong>Categorias:</strong> ${d.categorias ? d.categorias.join(", ") : ""}</p>
+      <p><strong>Ingredientes:</strong></p>
+      <ul>${d.ingredientes ? d.ingredientes.map(ing => `<li>${ing}</li>`).join("") : ""}</ul>
+    </div>
+  `;
 
+/*
 	//antigo
   card.innerHTML = `
     <img src="assets/imagens/${d.img || 'imagem-default.jpg'}" class="card-img-top" alt="${d.nome}">
@@ -55,23 +75,8 @@ function criarCardReceita(d) {
     </div>
   `;
 
+*/
   /*
-	//novo
-   card.innerHTML = `
-   <img src="${imgSrc}" class="card-img-top" alt="${d.nome}">
-     <div class="card-body">
-       <p><strong>ID:</strong> ${d.id}</p>
-       <h5 class="card-title">${d.nome}</h5>
-      
-       <p><strong>Autor:</strong> ${d.autor}</p>
-       <p><strong>Tempo:</strong> ${d.tempoDePreparoMinutos} min</p>
-       <p><strong>Porções:</strong> ${d.qtddPorcoes || ''}</p>
-       <p><strong>Modo de Preparo:</strong> ${d.modoPreparo || ""}</p>
-       <p><strong>Categorias:</strong> ${d.categorias ? d.categorias.join(", ") : ""}</p>
-       <p><strong>Ingredientes:</strong></p>
-       <ul>${d.ingredientes ? d.ingredientes.map(ing => `<li>${ing}</li>`).join("") : ""}</ul>
-     </div>
-   `;
 
     */
   return card;

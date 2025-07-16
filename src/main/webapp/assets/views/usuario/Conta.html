@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Conta</title>
-    <link rel="icon" href="${ctx}/imagens/logo/iconsite.png" type="image/png">
-
+<link rel="icon" href="assets/imagens/logo/iconsite.png" type="image/png">
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -219,7 +218,7 @@
             card.setAttribute("onkeypress", `if(event.key === 'Enter') irParaReceitaMaisDetalhada2(${receita.id})`);
 
             card.innerHTML = `
-                <img alt="Imagem da Receita" src="${contextPath}/assets/imagens/${receita.img}" || "${contextPath}/imagens/${receita.img}">
+                <img alt="Imagem da Receita" src="${contextPath}/imagens/${receita.img}" || "${contextPath}/imagens/${receita.img}">
                 <p><strong>ID:</strong> ${receita.id}</p>
                 <p><strong>Nome:</strong> ${receita.nome}</p>
                 <p><strong>Autor:</strong> ${receita.autor}</p>
