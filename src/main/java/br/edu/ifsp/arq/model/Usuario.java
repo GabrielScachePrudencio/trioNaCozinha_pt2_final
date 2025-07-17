@@ -84,6 +84,10 @@ public class Usuario implements Serializable {
         return tipo;
     }
 
+    public String gettipoString() {
+    	return tipo.getDescricao();
+    }
+    
     public void setTipo(TipoUsuario tipo) {
         this.tipo = tipo;
     }

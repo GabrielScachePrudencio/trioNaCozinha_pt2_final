@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import br.edu.ifsp.arq.dao.ReceitaDAO;
 import br.edu.ifsp.arq.dao.UsuarioDAO;
 import br.edu.ifsp.arq.model.Receita;
+import br.edu.ifsp.arq.model.TipoUsuario;
 import br.edu.ifsp.arq.model.Usuario;
 
 @WebServlet("/UsuarioServletSalvar")
@@ -25,10 +27,12 @@ import br.edu.ifsp.arq.model.Usuario;
 public class UsuarioServletSalvar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        UsuarioDAO usuarioDao;
+       ReceitaDAO receitaDao;
  
     public UsuarioServletSalvar() {
         super();
         usuarioDao = UsuarioDAO.getInstance_U();
+        receitaDao = ReceitaDAO.getInstance_R();
     }
 
 	
@@ -45,6 +49,7 @@ public class UsuarioServletSalvar extends HttpServlet {
 	        String nome = request.getParameter("nome");
 	        String nomeAnt = request.getParameter("nomeAntigo");
 	        String senha = request.getParameter("senha");
+	        String tipo = request.getParameter("tipo");
 	        
 	        ArrayList<Receita> minhasRece = usuarioDao.buscarPorID(id2).getMinhasReceitas();
 	        
@@ -78,9 +83,21 @@ public class UsuarioServletSalvar extends HttpServlet {
 	            filePart.write(uploadPath + File.separator + fileName);
 	        }
 	        
-	        Usuario u = new Usuario(id2, nome, senha, fileName, null, minhasRece);
+	        Usuario u = new Usuario(id2, nome, senha, fileName, TipoUsuario.NORMAL, minhasRece);
 	        
 	        usuarioDao.editar(id2, u);
+	        
+	        ArrayList<Receita> todasReceitas = receitaDao.mostrarTodos();
+	        ArrayList<Receita> receitasFiltradas = new ArrayList<>();
+	        
+	        for (Receita r : todasReceitas) {
+	            if (r.getAutor().equals(nomeAnt)) {
+	            	r.setAutor(nome);
+	                receitasFiltradas.add(r);
+	            }
+	        }
+	        receitaDao.setDadosArq(todasReceitas);
+
 	        
 	        if(usuarioLogado.getNome().equals(nomeAnt)) {
 	        	sessao.setAttribute("usuarioLogado", u);

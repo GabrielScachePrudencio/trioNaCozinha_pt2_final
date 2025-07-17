@@ -18,6 +18,7 @@ import javax.servlet.http.Part;
 import com.google.gson.Gson;
 
 import br.edu.ifsp.arq.dao.ReceitaDAO;
+import br.edu.ifsp.arq.dao.UsuarioDAO;
 import br.edu.ifsp.arq.model.Receita;
 import br.edu.ifsp.arq.model.Usuario;
 
@@ -27,11 +28,15 @@ import br.edu.ifsp.arq.model.Usuario;
 @MultipartConfig
 public class ReceitaServletSalvar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	ReceitaDAO receitaDao;
+	private ReceitaDAO receitaDao;
+    private UsuarioDAO usuarioDao;
+
 
     public ReceitaServletSalvar() {
         super();
         receitaDao = ReceitaDAO.getInstance_R();
+        usuarioDao = UsuarioDAO.getInstance_U(); 
+
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -90,6 +95,22 @@ public class ReceitaServletSalvar extends HttpServlet {
 		receitaDao.editar(id2, r);
 
 		// Atualiza lista do usuário logado
+		
+
+        Usuario dono = usuarioDao.buscarDonoDaReceita(id2);
+        
+        if (dono != null) {
+            // Remove receita antiga da lista
+            dono.getMinhasReceitas().removeIf(receita -> receita.getId() == id2);
+
+            // Adiciona a nova versão da receita
+            dono.getMinhasReceitas().add(r);
+
+            // Atualiza o usuário no DAO
+            usuarioDao.atualizarMinhasReceitas(dono, dono.getMinhasReceitas());
+
+            
+        }
 		for (int i = 0; i < usuarioLogado.getMinhasReceitas().size(); i++) {
 			if (usuarioLogado.getMinhasReceitas().get(i).getId() == id2) {
 				usuarioLogado.getMinhasReceitas().set(i, r);

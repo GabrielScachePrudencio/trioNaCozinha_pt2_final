@@ -117,6 +117,20 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
         return null;
     }
 
+    public Usuario buscarDonoDaReceita(int idReceita) {
+        for (Usuario u : getDadosArq()) {
+            if (u.getMinhasReceitas() != null) {
+                for (Receita r : u.getMinhasReceitas()) {
+                    if (r.getId() == idReceita) {
+                        return u; 
+                    }
+                }
+            }
+        }
+        return null; 
+    }
+
+    
     // Leitura dos dados do arquivo JSON
     public ArrayList<Usuario> getDadosArq() {
         File arq = new File(CAMINHO_ARQUIVO);

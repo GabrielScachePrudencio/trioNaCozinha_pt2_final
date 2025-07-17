@@ -1,6 +1,3 @@
-{"id":1,"nome":"ava","senha":"ava","img":"IMG_0112-2.jpg","tipo":"AVALIADOR","minhasReceitas":[]}
-{"id":2,"nome":"adm","senha":"adm","img":"IMG_0112-2.jpg","tipo":"ADMINISTRADOR","minhasReceitas":[]}
-{"id":6,"nome":"aa","senha":"aa","img":"IMG_0112-2.jpg","tipo":"NORMAL","minhasReceitas":[{"id":8,"nome":"1","autor":"aa","tempoDePreparoMinutos":1111,"ingredientes":["3 ovos"],"modoPreparo":"\\z","categorias":["Bolos"],"qtddPorcoes":1,"img":"teste.png","avaliacoes":[],"comentarios":[]},{"id":9,"nome":"ex","autor":"aa","tempoDePreparoMinutos":1,"ingredientes":[],"modoPreparo":"a","categorias":["Biscoitos"],"qtddPorcoes":1,"img":"Captura de tela 2024-10-29 110636.png","avaliacoes":[],"comentarios":[]},{"id":9,"nome":"gabigol","autor":"aa","tempoDePreparoMinutos":1,"ingredientes":["Ovo","novo",""],"modoPreparo":"aasdas","categorias":["Biscoitos"],"qtddPorcoes":1,"img":"teste.png","avaliacoes":[],"comentarios":[]}]}
-{"id":7,"nome":"wes","senha":"wes","img":"Captura de tela 2024-08-29 194940.png","tipo":"NORMAL","minhasReceitas":[]}
-{"id":8,"nome":"gg","senha":"11","img":"teste.png","tipo":"NORMAL","minhasReceitas":[]}
-{"id":9,"nome":"s","senha":"s","img":"teste.png","tipo":"NORMAL","minhasReceitas":[]}
+{"id":1,"nome":"ava","senha":"ava","img":"usuarios/ancelloti.png","tipo":"AVALIADOR","minhasReceitas":[]}
+{"id":2,"nome":"adm","senha":"adm","img":"usuarios/ancelloti.png","tipo":"ADMINISTRADOR","minhasReceitas":[]}
+{"id":3,"nome":"1","senha":"1","img":"Etapas.png","tipo":"NORMAL","minhasReceitas":[{"id":1,"nome":"1","autor":"1","tempoDePreparoMinutos":1,"ingredientes":["Açúcar"],"modoPreparo":"1","categorias":["Biscoitos"],"qtddPorcoes":1,"img":"Etapas.png","avaliacoes":[],"comentarios":[]}]}

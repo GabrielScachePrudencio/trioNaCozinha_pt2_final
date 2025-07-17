@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import br.edu.ifsp.arq.dao.ReceitaDAO;
+import br.edu.ifsp.arq.dao.UsuarioDAO;
 import br.edu.ifsp.arq.model.Receita;
 import br.edu.ifsp.arq.model.Usuario; 
 
@@ -26,11 +27,15 @@ import java.util.ArrayList;
 public class ReceitaServletEditar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    ReceitaDAO receitaDao;   	
+	private ReceitaDAO receitaDao;   	
+	private UsuarioDAO usuarioDao;
+
     
     public ReceitaServletEditar() {
         super();
         receitaDao = ReceitaDAO.getInstance_R();
+        usuarioDao = UsuarioDAO.getInstance_U(); 
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -91,10 +91,10 @@ public class UsuarioServletEditar extends HttpServlet {
 
         out.println("      <label for='senha'>Senha:</label>");
         out.println("      <input type='text' id='senha' name='senha' value='" + u.getSenha() + "' required>");
-
+        
         out.println("      <label for='img'>Imagem:</label>");
         out.println("      <input type='file' id='img' name='img' accept='image/*'>");
-
+        
         out.println("      <img src='" + request.getContextPath() + "/imagens/" + u.getImg() + "' alt='Imagem do usuário'>");
 
         out.println("      <button type='submit'>Salvar Alterações</button>");

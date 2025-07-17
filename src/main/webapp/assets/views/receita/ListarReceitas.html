@@ -5,80 +5,303 @@
   <title>Listar Receitas e Usuários</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="icon" href="assets/imagens/logo/iconsite.png" type="image/png" />
+  <style>
+    .navbar {
+      background-color: #ffc107;
+      color: #f8f9fa;
+    }
+    .navbar a {
+      color: #f8f9fa;
+    }
+    .navbar a:hover {
+      color: #212529;
+    }
+    .btn-bege {
+      background-color: #ffc107;
+      color: #212529;
+      border: none;
+    }
+    .btn-bege:hover {
+      background-color: #e0a800;
+      color: white;
+    }
+    .btn-outline-bege {
+      background-color: transparent;
+      color: #ffc107;
+      border: 2px solid #ffc107;
+    }
+    .btn-outline-bege:hover {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    .imgPerfil {
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <h1>Receitas</h1>
-    <table class="table table-bordered" id="tabelaReceitas">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Autor</th>
-          <th>Tempo (min)</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Linhas inseridas via JS -->
-      </tbody>
-    </table>
+<div class="container-fluid justify-content-between" id="menuJS"></div>
 
-    </div>
+<div class="container mt-5">
+  <h1>Receitas</h1>
+  <table class="table table-bordered" id="tabelaReceitas">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Autor</th>
+        <th>Tempo (min)</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <script>
-    const contextPath = "/TRIO_NACOZINHA"; // ajuste para seu contexto
+<div class="container mt-5">
+  <h1>Usuários Cadastrados</h1>
+  <table class="table table-bordered" id="tabelaUsuarios">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-    // --------- RECEITAS ---------
-    async function carregarReceitas() {
-      try {
-        const resp = await fetch(`${contextPath}/ReceitaServletMostrarTodas`);
-        if (!resp.ok) throw new Error("Erro ao carregar receitas");
-        const receitas = await resp.json();
+<script>
+  const contextPath = "/TRIO_NACOZINHA";
+  let usuarioLogado = null;
 
-        const tbody = document.querySelector("#tabelaReceitas tbody");
-        tbody.innerHTML = "";
+  async function verificarLogin() {
+    try {
+      const resp = await fetch(`${contextPath}/UsuarioServletLogar`, { credentials: "include" });
+      if (!resp.ok) throw new Error("Não logado");
+      usuarioLogado = await resp.json();
+    } catch {
+      usuarioLogado = null;
+    }
+  }
 
-        receitas.forEach(r => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${r.id}</td>
-            <td>${r.nome}</td>
-            <td>${r.autor}</td>
-            <td>${r.tempoDePreparoMinutos}</td>
-            <td>
-              <a href="${contextPath}/ReceitaServletEditar?id=${r.id}" class="btn btn-warning btn-sm me-2">Editar</a>
-              <button class="btn btn-danger btn-sm" onclick="excluirReceita(${r.id})">Excluir</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (error) {
-        alert(error.message);
+  async function carregarMenu() {
+    const nav = document.createElement('nav');
+    nav.className = 'navbar navbar-expand-lg bg-marrom text-bege px-4 py-3';
+
+    const container = document.createElement('div');
+    container.className = 'container-fluid justify-content-between d-flex align-items-center';
+
+    const brandLink = document.createElement('a');
+    brandLink.className = 'navbar-brand';
+    brandLink.href = `${contextPath}/index.html`;
+    const logoImg = document.createElement('img');
+    logoImg.src = `${contextPath}/assets/imagens/logo/logo_pageindex.png`;
+    logoImg.alt = 'Trio Na Cozinha';
+    logoImg.height = 40;
+    brandLink.appendChild(logoImg);
+    container.appendChild(brandLink);
+
+    const containerDiv = document.createElement('div');
+    containerDiv.className = 'd-flex align-items-center gap-3';
+
+    const sobreNosLink = document.createElement('a');
+    sobreNosLink.href = `${contextPath}/assets/views/extras/SobreNos.html`;
+    sobreNosLink.className = 'btn btn-outline-bege';
+    sobreNosLink.textContent = 'Sobre nós';
+    containerDiv.appendChild(sobreNosLink);
+
+    const form = document.createElement('form');
+    form.className = 'd-flex';
+    form.setAttribute('role', 'search');
+    form.method = 'GET';
+
+    const inputBusca = document.createElement('input');
+    inputBusca.className = 'form-control me-2';
+    inputBusca.type = 'search';
+    inputBusca.name = 'busca';
+    inputBusca.placeholder = 'Pesquisar';
+    form.appendChild(inputBusca);
+
+    const btnBusca = document.createElement('button');
+    btnBusca.className = 'btn btn-bege';
+    btnBusca.type = 'submit';
+    btnBusca.textContent = 'Pesquisar';
+    form.appendChild(btnBusca);
+
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const nomeBuscado = inputBusca.value.trim();
+      if (nomeBuscado) {
+        window.location.href = `${contextPath}/assets/views/receita/ReceitaEspecifica.html?nome=${encodeURIComponent(nomeBuscado)}`;
       }
+    };
+    containerDiv.appendChild(form);
+
+    if (usuarioLogado && usuarioLogado.tipo === "NORMAL") {
+      const addReceitaLink = document.createElement('a');
+      addReceitaLink.href = `${contextPath}/assets/views/receita/AddReceita.html`;
+      addReceitaLink.className = 'btn btn-bege';
+      addReceitaLink.textContent = 'Adicionar Receita';
+      containerDiv.appendChild(addReceitaLink);
     }
 
-    async function excluirReceita(id) {
-      if (!confirm("Deseja realmente excluir esta receita?")) return;
+    if (usuarioLogado) {
+      const contaLink = document.createElement('a');
+      contaLink.href = `${contextPath}/assets/views/usuario/Conta.html`;
+      contaLink.className = 'btn btn-outline-bege d-flex align-items-center';
+      contaLink.style.gap = '10px';
 
-      try {
-        const resp = await fetch(`${contextPath}/ReceitaServletExcluir?id=${id}`, {
-          method: "GET",
-          credentials: "include"
-        });
-        if (!resp.ok) throw new Error("Erro ao excluir receita.");
-        alert("Receita excluída!");
-        carregarReceitas();
-      } catch (error) {
-        alert(error.message);
-      }
+      const imgPerfil = document.createElement('img');
+      imgPerfil.src = `${contextPath}/imagens/${usuarioLogado.img}`;
+      imgPerfil.alt = 'Foto do Usuário';
+      imgPerfil.className = 'imgPerfil';
+
+      const nomeSpan = document.createElement('span');
+      nomeSpan.className = 'text-bege';
+      nomeSpan.textContent = usuarioLogado.nome || 'Usuário';
+
+      contaLink.appendChild(imgPerfil);
+      contaLink.appendChild(nomeSpan);
+      containerDiv.appendChild(contaLink);
+    } else {
+      const cadastrarLink = document.createElement('a');
+      cadastrarLink.href = `${contextPath}/assets/views/usuario/AddUsuario.html`;
+      cadastrarLink.className = 'btn btn-outline-bege';
+      cadastrarLink.textContent = 'Cadastrar-se';
+      containerDiv.appendChild(cadastrarLink);
+
+      const logarLink = document.createElement('a');
+      logarLink.href = `${contextPath}/assets/views/usuario/LogarUsuario.html`;
+      logarLink.className = 'btn btn-outline-bege';
+      logarLink.textContent = 'Logar';
+      containerDiv.appendChild(logarLink);
     }
 
-        // Carregar tudo ao carregar a página
-    window.onload = () => {
+    container.appendChild(containerDiv);
+    nav.appendChild(container);
+
+    const menuAntigo = document.querySelector('nav.navbar');
+    if (menuAntigo) {
+      menuAntigo.replaceWith(nav);
+    } else {
+      document.getElementById('menuJS').appendChild(nav);
+    }
+  }
+
+  async function carregarReceitas() {
+    try {
+      const resp = await fetch(`${contextPath}/ReceitaServletMostrarTodas`);
+      if (!resp.ok) throw new Error("Erro ao carregar receitas");
+      const receitas = await resp.json();
+
+      const tbody = document.querySelector("#tabelaReceitas tbody");
+      tbody.innerHTML = "";
+
+      receitas.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.nome}</td>
+          <td>${r.autor}</td>
+          <td>${r.tempoDePreparoMinutos}</td>
+          <td>
+            <a href="${contextPath}/ReceitaServletEditar?id=${r.id}" class="btn btn-warning btn-sm me-2">Editar</a>
+            <button class="btn btn-danger btn-sm" onclick="excluirReceita(${r.id})">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function excluirReceita(id) {
+    if (!confirm("Deseja realmente excluir esta receita?")) return;
+    try {
+      const resp = await fetch(`${contextPath}/ReceitaServletDeletar?id=${id}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      if (!resp.ok) throw new Error("Erro ao excluir receita.");
       carregarReceitas();
+      window.location.href = `${contextPath}/index.html`; 
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
- };
-  </script>
+  // ---------- USUÁRIOS -----------
+  async function carregarUsuarios() {
+  try {
+    const resp = await fetch(`${contextPath}/todosUsuarios`);
+    if (!resp.ok) throw new Error("Erro ao carregar usuários");
+
+    const usuarios = await resp.json();
+    const tbody = document.querySelector("#tabelaUsuarios tbody");
+    tbody.innerHTML = "";
+
+    usuarios.forEach(u => {
+      const tr = document.createElement("tr");
+      
+      // Criação da célula de ações
+      let acoesHTML = "";
+      if (u.tipo === "AVALIADOR" || u.tipo === "ADMINISTRADOR") {
+        acoesHTML = `<td>Não pode ser alterado ou excluído</td>`;
+      } else {
+        acoesHTML = `
+          <td>
+            <a href="${contextPath}/UsuarioServletEditar?id=${u.id}" class="btn btn-warning btn-sm me-2">Editar</a>
+            <button class="btn btn-danger btn-sm" onclick="excluirUsuario(${u.id})">Excluir</button>
+          </td>
+        `;
+      }
+
+      tr.innerHTML = `
+        <td>${u.id}</td>
+        <td>${u.nome}</td>
+        <td>${u.tipo}</td>
+        ${acoesHTML}
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    alert("Erro ao carregar usuários: " + error.message);
+  }
+}
+ 
+  async function excluirUsuario(id) {
+    if (!confirm("Deseja realmente excluir este usuário?")) return;
+    try {
+      const resp = await fetch(`${contextPath}/UsuarioServletDeletar?id=${id}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      if (!resp.ok) throw new Error("Erro ao excluir usuário.");
+      carregarUsuarios();
+      window.location.href = `${contextPath}/index.html`; 
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function init() {
+    await verificarLogin();
+    await carregarMenu();
+    await carregarReceitas();
+    await carregarUsuarios();
+  }
+
+  window.onload = init;
+</script>
 </body>
 </html>
